@@ -79,18 +79,22 @@ type Client struct {
 
 	UserAgent string
 
-	Dashboards         *DashboardsService
-	Folders            *FoldersService
-	FoldersPermissions *FoldersPermissionsService
-	Teams              *TeamsService
-	Users              *UsersService
+	Dashboards            *DashboardsService
+	DashboardsPermissions *DashboardsPermissionsService
+	Folders               *FoldersService
+	FoldersPermissions    *FoldersPermissionsService
+	Teams                 *TeamsService
+	Users                 *UsersService
 }
 
-func NewClient(httpClient *http.Client, token string) *Client {
+func NewTokenClient(httpClient *http.Client, endpoint, token string) (*Client, error) {
 	client := newClient(httpClient)
+	if err := client.SetBaseURL(endpoint + "/api"); err != nil {
+		return nil, err
+	}
 	client.authType = privateToken
 	client.token = token
-	return client
+	return client, nil
 }
 
 func NewBasicAuthClient(httpClient *http.Client, endpoint, username, password string) (*Client, error) {
@@ -116,6 +120,7 @@ func newClient(httpClient *http.Client) *Client {
 	}
 
 	c.Dashboards = &DashboardsService{client: c}
+	c.DashboardsPermissions = &DashboardsPermissionsService{client: c}
 	c.Folders = &FoldersService{client: c}
 	c.FoldersPermissions = &FoldersPermissionsService{client: c}
 	c.Teams = &TeamsService{client: c}
