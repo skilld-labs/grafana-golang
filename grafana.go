@@ -2,7 +2,6 @@ package grafana
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,7 +10,6 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -308,3 +306,5 @@ func parseError(raw interface{}) string {
 		return fmt.Sprintf("failed to parse unexpected error type: %T", raw)
 	}
 }
+
+type OptionFunc func(*http.Request) error
