@@ -18,7 +18,7 @@ import (
 
 const (
 	defaultBaseURL = "https://grafana.com/api/"
-	userAgent      = "go-grafana"
+	userAgent      = "grafana-golang"
 )
 
 type authType int

@@ -1,4 +1,4 @@
-# go-grafana
+# grafana-golang
 Golang grafana API client
 
 Author: [Michael Meunier](https://github.com/mickymiek)

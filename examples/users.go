@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/skilld-labs/go-grafana"
+
+	grafana "github.com/skilld-labs/grafana-golang"
 )
 
 func createUserExample() {
