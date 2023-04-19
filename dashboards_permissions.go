@@ -32,7 +32,7 @@ type DashboardPermission struct {
 }
 
 func (s *DashboardsPermissionsService) GetDashboardPermissions(id int) (*DashboardPermissions, *Response, error) {
-	u := fmt.Sprintf("dashboards/%d/permissions", id)
+	u := fmt.Sprintf("dashboards/id/%d/permissions", id)
 
 	req, err := s.client.NewRequest("GET", u, nil, nil)
 	if err != nil {
@@ -52,7 +52,7 @@ type UpdateDashboardPermissionsOptions struct {
 }
 
 func (s *DashboardsPermissionsService) UpdateDashboardPermissions(id int, opt *UpdateDashboardPermissionsOptions) (*Response, error) {
-	u := fmt.Sprintf("dashboards/%d/permissions", id)
+	u := fmt.Sprintf("dashboards/id/%d/permissions", id)
 
 	req, err := s.client.NewRequest("POST", u, opt, nil)
 	if err != nil {
