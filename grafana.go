@@ -270,23 +270,24 @@ func CheckResponse(r *http.Response) error {
 }
 
 // Format:
-// {
-//     "message": {
-//         "<property-name>": [
-//             "<error-message>",
-//             "<error-message>",
-//             ...
-//         ],
-//         "<embed-entity>": {
-//             "<property-name>": [
-//                 "<error-message>",
-//                 "<error-message>",
-//                 ...
-//             ],
-//         }
-//     },
-//     "error": "<error-message>"
-// }
+//
+//	{
+//	    "message": {
+//	        "<property-name>": [
+//	            "<error-message>",
+//	            "<error-message>",
+//	            ...
+//	        ],
+//	        "<embed-entity>": {
+//	            "<property-name>": [
+//	                "<error-message>",
+//	                "<error-message>",
+//	                ...
+//	            ],
+//	        }
+//	    },
+//	    "error": "<error-message>"
+//	}
 func parseError(raw interface{}) string {
 	switch raw := raw.(type) {
 	case string:
@@ -313,3 +314,58 @@ func parseError(raw interface{}) string {
 }
 
 type OptionFunc func(*http.Request) error
+
+type SearchType string
+
+const (
+	SearchForDashboards SearchType = "dash-db"
+	SearchForFolders    SearchType = "dash-folder"
+)
+
+type SearchOptions struct {
+	Query         string     `url:"query,omitempty"`
+	Tag           []string   `url:"tag,omitempty"`
+	SearchType    SearchType `url:"type,omitempty"`
+	DashboardIds  []int      `url:"dashboardIds,omitempty"`
+	DashboardUID  string     `url:"dashboardUID,omitempty"`
+	DashboardUIDs []string   `url:"dashboardUIDs,omitempty"`
+	FolderIds     []int      `url:"folderIds,omitempty"`
+	Starred       bool       `url:"starred,omitempty"`
+	Limit         int        `url:"limit,omitempty"`
+	Page          int        `url:"page,omitempty"`
+}
+
+// https://grafana.com/docs/http_api/folder_dashboard_search/
+// can search by any available property
+func (c *Client) SearchByOptions(props SearchOptions) (*SearchResults, *Response, error) {
+	values, err := query.Values(props)
+	if err != nil {
+		return nil, nil, err
+	}
+	u := "search?" + values.Encode()
+	req, err := c.NewRequest("GET", u, nil, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	d := new(SearchResults)
+	resp, err := c.Do(req, d)
+	if err != nil {
+		return nil, resp, err
+	}
+	return d, resp, err
+}
+
+type SearchResults []SearchResult
+
+type SearchResult struct {
+	ID        int      `json:"id,omitempty"`
+	UID       string   `json:"uid,omitempty"`
+	Title     string   `json:"title,omitempty"`
+	URI       string   `json:"uri,omitempty"`
+	URL       string   `json:"url,omitempty"`
+	Slug      string   `json:"slug,omitempty"`
+	Type      string   `json:"type,omitempty"`
+	Tags      []string `json:"tags,omitempty"`
+	IsStarred bool     `json:"isStarred,omitempty"`
+}
