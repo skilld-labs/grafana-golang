@@ -27,20 +27,6 @@ type DashboardResult struct {
 	Dashboard Dashboard `json:"dashboard"`
 }
 
-type DashboardSearchResults []DashboardSearchResult
-
-type DashboardSearchResult struct {
-	ID        int      `json:"id,omitempty"`
-	UID       string   `json:"uid,omitempty"`
-	Title     string   `json:"title,omitempty"`
-	URI       string   `json:"uri,omitempty"`
-	URL       string   `json:"url,omitempty"`
-	Slug      string   `json:"slug,omitempty"`
-	Type      string   `json:"type,omitempty"`
-	Tags      []string `json:"tags,omitempty"`
-	IsStarred bool     `json:"isStarred,omitempty"`
-}
-
 type Meta struct {
 	URL     string     `json:"url"`
 	Version int        `json:"version"`
@@ -79,7 +65,7 @@ type CreateOrUpdateDashboardOptions struct {
 	Overwrite bool      `json:"overwrite,omitempty"`
 }
 
-//If opt.Dashboard.ID is null, dashboard will be created, else updated if opt.Overwrite is set to true.
+// If opt.Dashboard.ID is null, dashboard will be created, else updated if opt.Overwrite is set to true.
 func (s *DashboardsService) CreateOrUpdateDashboard(opt *CreateOrUpdateDashboardOptions) (*Dashboard, *Response, error) {
 	u := fmt.Sprintf("dashboards/db")
 
@@ -108,20 +94,12 @@ func (s *DashboardsService) DeleteDashboard(uid string) (*Response, error) {
 	return s.client.Do(req, nil)
 }
 
-//https://grafana.com/docs/http_api/folder_dashboard_search/
-//can search by id, uid, title...
-func (s *DashboardsService) SearchDashboardByQuery(query string) (*DashboardSearchResults, *Response, error) {
-	u := fmt.Sprintf("search?query=%s&type=dash-db", query)
-
-	req, err := s.client.NewRequest("GET", u, nil, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	d := new(DashboardSearchResults)
-	resp, err := s.client.Do(req, d)
-	if err != nil {
-		return nil, resp, err
-	}
-	return d, resp, err
+// https://grafana.com/docs/http_api/folder_dashboard_search/
+// can search by id, uid, title...
+// Deprecated: Use client.SearchByOptions instead with specifying SearchType.
+func (s *DashboardsService) SearchDashboardByQuery(query string) (*SearchResults, *Response, error) {
+	return s.client.SearchByOptions(SearchOptions{
+		SearchType: SearchForDashboards,
+		Query:      query,
+	})
 }
