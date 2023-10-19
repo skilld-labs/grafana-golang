@@ -20,6 +20,7 @@ type Dashboard struct {
 	Annotations   *Annotations  `json:"annotations,omitempty"`
 	Panels        []interface{} `json:"panels,omitempty"`
 	Time          *Time         `json:"time,omitempty"`
+	Templating    *Templating   `json:"templating,omitempty"`
 }
 
 type DashboardResult struct {
@@ -41,6 +42,10 @@ type Annotations struct {
 type Time struct {
 	From string `json:"from"`
 	To   string `json:"to"`
+}
+
+type Templating struct {
+	List []interface{} `json:"list"`
 }
 
 func (s *DashboardsService) GetDashboardByUID(uid string) (*DashboardResult, *Response, error) {
